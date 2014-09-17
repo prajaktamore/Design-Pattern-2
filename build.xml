@@ -1,0 +1,83 @@
+
+<project name="designConf" default="run" basedir=".">
+	<property name="build.sysclasspath" value="last"/>
+
+	<property name="build.compiler"		value="modern"/>
+	<property name="src"				value="src"/>
+	<property name="BUILD"				value="bin"/>
+	<property name="classes"			value="${BUILD}/classes"/>
+
+	<target name="compile" depends="designConf"/>
+
+	<target name="clean">
+       <delete dir="${BUILD}"/>
+	</target>
+
+	<!-- Prepare target directories -->
+	<target name="prepare" depends="clean">
+        <mkdir dir="${BUILD}"/>
+        <mkdir dir="${classes}"/>
+	</target>
+
+
+	<!-- ** means all subdirectories as well -->
+	<!-- * means all files in the current directory -->
+	<!-- for just java files use *.java -->
+
+	<target name="designConf" depends="prepare">
+		<javac srcdir="${src}"
+           includes="designConf/**"
+           excludes="**/package.html"
+           destdir="${classes}"
+           classpath="${classes}"
+           debug="on"
+           optimize="on"
+           deprecation="off"/>
+	</target>
+
+	<target name="jar" depends="compile">
+        <mkdir dir="${BUILD}/jar"/>
+        <jar destfile="${BUILD}/jar/designConf.jar" basedir="${BUILD}/classes">
+            <manifest>
+                <attribute name="Main-Class" value="designConf.driver.Driver"/>
+            </manifest>
+        </jar>
+    </target>
+
+
+	<target name="run" depends="jar">
+      <java jar="${BUILD}/jar/designConf.jar"  fork="true">
+      <!--
+	  <arg value="${arg0}"/>
+      <arg value="${arg1}"/>
+      <arg value="${arg2}"/>
+      <arg value="${arg3}"/>
+	  -->
+     </java>
+    </target>
+
+<!--
+	<target name="run" depends="jar">
+		<java jar="${BUILD}/jar/designConf.jar"  fork="true">
+			<arg value="Source.txt"/>
+			<arg value="4"/>
+			<arg value="SearchFile.txt"/>
+			<arg value="4"/>
+			<arg value="4"/>
+		</java>
+	</target>
+-->	
+	
+	<!-- make tarzip -->
+	 <target name="purgeArchives" depends="clean">
+		<delete file="./designConf.tar" />
+		<delete file="./designConf.tar.gz" />
+	</target>
+
+	<target name="tarzip" depends="purgeArchives">
+		<tar destfile="./designConf.tar" basedir="." />
+		<gzip destfile="./designConf.tar.gz" src="./designConf.tar"/>
+		<delete file="./designConf.tar" />
+	</target>
+
+</project>
